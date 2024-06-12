@@ -1,6 +1,6 @@
 # 1. all_code
 
-Store all code files, `main.ipynb` is the main function.
+Store all code files, `main.ipynb` is the main function. `npy_file` folder stores the video data count results in the [repnet](https://sites.google.com/view/repnet)
 
 # 2. event_csv
 
