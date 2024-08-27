@@ -1,4 +1,5 @@
 import numpy as np 
+import pandas as pd 
 from fastdtw import fastdtw
 import pymannkendall as mk
 
@@ -38,38 +39,38 @@ def get_index_of_bottom_and_top_by_mk(data):
             elif win_trend[i] == 'decreasing' and win_trend[i-1] != 'decreasing':
                 win_change = np.append(win_change, win_start_index[i-1])
 
-            # the window takes the intermediate value as the segmentation line 
-            win_change = win_change + win_size / 2 
-            win_change = win_change.astype(np.int32)
-            # start and end teh division line 
-            win_change = np.insert(win_change, 0, 0)
-            # -1 prevent cross - border 
-            win_change = np.append(win_change, data.shape[0] - 1)
-            # the variance of currently dividing the pane 
-            variance = np.var(np.diff(win_change)) 
+        # the window takes the intermediate value as the segmentation line 
+        win_change = win_change + win_size / 2 
+        win_change = win_change.astype(np.int32)
+        # start and end teh division line 
+        win_change = np.insert(win_change, 0, 0)
+        # -1 prevent cross - border 
+        win_change = np.append(win_change, data.shape[0] - 1)
+        # the variance of currently dividing the pane 
+        variance = np.var(np.diff(win_change)) 
 
-            if flag:
-                first = variance 
-            else : 
-                second = variance
+        if flag:
+            first = variance 
+        else : 
+            second = variance
 
-            # it shows that the variance of the square difference at this time 
-            # is greater than the difference in the previous cutting method.
-            # select the previous cutting method as the final method 
-            if second >= first:
-                break 
-            flag = not flag 
-            win_size = win_size + 5 
-            final_win_change = win_change 
+        # it shows that the variance of the square difference at this time 
+        # is greater than the difference in the previous cutting method.
+        # select the previous cutting method as the final method 
+        if second >= first:
+            break 
+        flag = not flag 
+        win_size = win_size + 5 
+        final_win_change = win_change 
 
-        # the index is the starting label of the rising edge to 1 to 1 
-        top_win = np.zeros(final_win_change.shape[0])
-        if data[final_win_change[0]] <= data[final_win_change[1]]:
-            top_win[0] = 1
-        for i in range(1, final_win_change.shape[0]):
-            if data[final_win_change[i-1]] >= data[final_win_change[i]]:
-                top_win[i] = 1 
-        return final_win_change, top_win, win_size, step 
+    # the index is the starting label of the rising edge to 1 to 1 
+    top_win = np.zeros(final_win_change.shape[0])
+    if data[final_win_change[0]] <= data[final_win_change[1]]:
+        top_win[0] = 1
+    for i in range(1,final_win_change.shape[0]):
+        if data[final_win_change[i-1]] >= data[final_win_change[i]]:
+            top_win[i] = 1 
+    return final_win_change,top_win,win_size,step 
 
 # cycle count 
 def get_count(result):
@@ -129,6 +130,92 @@ def get_dtw_mean_cost(win_change, top_win, data):
             elif top_win[i] == 0 and top_win[j] == 0:
                 # get the matching price of two time sequences 
                 cost, _ = fastdtw(data[win_change[i] : win_change[i+1]], data[win_change[j] : win_change[j+1]])
+                # stay in the comparison of the rising along the comparison
+                num = data[win_change[j] : win_change[j+1]].shape[0] + data[win_change[i] : win_change[i+1]].shape[0]
+                avg_cost_by_dtw_bottom[k_bottom][g_bottom] = cost/num
+                avg_cost_by_dtw_bottom[g_bottom][k_bottom] = cost/num 
+                g_top = g_top + 1 
                 
-                
-                
+        if top_win[i] == 1:
+            k_top = k_top + 1 
+        else : 
+            k_bottom = k_bottom + 1 
+    
+    # delete the fulll 0 line and the last 0 delete
+    avg_cost_by_dtw_top = avg_cost_by_dtw_top[:-1, :-1]
+    avg_cost_by_dtw_bottom = avg_cost_by_dtw_bottom[:-1, :-1]
+    
+    # replace your own comparison price to the average value of other numbers 
+    for arr in avg_cost_by_dtw_top:
+        if arr.shape[0] != 1:
+            temp = np.sum(arr)/(arr.shape[0] - 1)
+            arr[arr == 0] = temp 
+    for arr in avg_cost_by_dtw_bottom:
+        if arr.shape[0] != 1:
+            temp = np.sum(arr)/(arr.shape[0] - 1)
+            arr[arr == 0] = temp 
+    
+    result_top = np.array([])
+    result_bottom = np.array([])
+    if avg_cost_by_dtw_top.shape[0] != 0:
+        result_top = np.sort(np.mean(avg_cost_by_dtw_top, axis=1))
+    if avg_cost_by_dtw_bottom.shape[0] != 0:
+        result_bottom = np.sort(np.mean(avg_cost_by_dtw_bottom, axis=1))
+    
+    # get the rising edge count 
+    count_top = get_count(result_top) 
+    # get the falling edge count 
+    count_bottom = get_count(result_bottom)
+    
+    # return larger rising or falling edge count 
+    return count_top if count_top > count_bottom else count_bottom
+
+
+def get_count_by_cost(file_name, class_num = -1, nature_flag = True):
+    file_path = None 
+    if nature_flag:
+        file_path = f'../../event_csv/compress_event_manhattan/class{class_num}/smooth_by_pca/compress_by_mean/{file_name}'
+    else:
+        # Artificial synthesis data
+        file_path = f'../../event_csv/compress_event_manhattan/articicial/smooth_by_pca/compress_by_mean/{file_name}'
+    # data after PCA and compress by mean 
+    pca_data = pd.read_csv(file_path)['value']
+    win_change, top_win, win_size, step = get_index_of_bottom_and_top_by_mk(pca_data)
+    return get_dtw_mean_cost(win_change, top_win, pca_data)
+
+# get all action cycle prediction infromation 
+def get_all_count(file_names, nature_flag= True):
+    # storage predictive value 
+    pred_count = np.array([])
+    if nature_flag:
+        for i in range(2, 8):
+            for name in file_names:
+                if i == 3:
+                    continue 
+                count = get_count_by_cost(f'{name}', i)
+                pred_count = np.append(pred_count, count)
+                print(f"The file name is {name} middle class_num = {i} the number of repetitions of the action is: {count}")
+            print("------------------------")
+    else: 
+        # artificial synthesis data 
+        for name in file_names:
+            count = get_count_by_cost(name, nature_flag=False) 
+            pred_count = np.append(pred_count, count) 
+            print(f"The file name is {name} the number of repetitions of the action is: {count}")
+    return pred_count
+
+# results criteria 
+
+# Mean Absolute error, an average absolute error
+def MAE(pred_count, real_count):
+    return np.mean(np.abs(real_count - pred_count)/real_count)
+
+# off-by-one (OBO) count error 
+def OBO(pred_count, real_count):
+    # predictive value and real value error 
+    temp = np.abs(real_count - pred_count)
+    # the proportion of the prediction value of the error is less than the same 
+    return temp[temp <= 1].shape[0]/temp.shape[0]
+
+
+# Index calculations under different conditions 
