@@ -121,5 +121,14 @@ def get_dtw_mean_cost(win_change, top_win, data):
             if top_win[i] == 1 and top_win[j] == 1:
                 # get the matching price of two time sequences 
                 cost, _ = fastdtw(data[win_change[i]: win_change[i+1]], data[win_change[j] : win_change[j+1]])
+                # stay in the comparison of the rising along the comparison
+                num = data[win_change[j] : win_change[j+1]].shape[0] + data[win_change[i] : win_change[i+1]].shape[0]
+                avg_cost_by_dtw_top[k_top][g_top] = cost/num 
+                avg_cost_by_dtw_bottom[g_top][k_top] = cost/num 
+                g_top = g_top + 1 
+            elif top_win[i] == 0 and top_win[j] == 0:
+                # get the matching price of two time sequences 
+                cost, _ = fastdtw(data[win_change[i] : win_change[i+1]], data[win_change[j] : win_change[j+1]])
+                
                 
                 
