@@ -1,4 +1,8 @@
+import numpy as np 
 import pandas as pd 
+import statsmodels.api as sm 
+from sklearn.decomposition import PCA 
+
 # manhattan compression 
 
 # manhattan distance with two coordinates 
@@ -86,6 +90,19 @@ def compress_by_Manhattan(file_name,class_num,delta=5,count_margin=100,nature_fl
             temp_x = row[1] 
             temp_y = row[2] 
             count = 1
+
+# PCA main component 
+def PCA_method(data: pd.DataFrame):
+    # get the NDarray form of dataframe 
+    data = data.values 
+    # one - dimensional 
+    pca = PCA(n_components=1) 
+    # apply PCA to data 
+    pca_data = pca.fit_transform(data)
+    pca_data = np.reshape(pca_data, -1)
+    # HP filter 
+    _, smooth = sm.tsa.filters.hpfilter(pca_data) 
+    return smooth
 
 # PCA 
 def dimensionality_reduction_PCA(file_name,class_num,nature_flag=True):

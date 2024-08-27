@@ -1,2 +1,6 @@
+# folders to ignore
+shapes_rotation
+
+# ignore files
 remote_fetch.bat 
 remote_upload.bat 

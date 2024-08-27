@@ -49,7 +49,7 @@ def get_front_or_tail(repeat_times_A, repeat_times_B):
     pd.DataFrame([['timestamp', 'x', 'y']]).to_csv(
         f'../../event_csv/split_data/artificial/b{repeat_times_B}_a{repeat_times_A}.csv',
         index=False, header=False, mode='w')
-
+ 
     # B connected behind A 
     pd.concat([df_A, df_B], ignore_index=True).to_csv(
         f'../../event_csv/split_data/artificial/b{repeat_times_B}_a{repeat_times_A}.csv',
@@ -86,7 +86,7 @@ def get_mid(repeat_times_A, repeat_times_B, flag=True):
             f'../../event_csv/split_data/artificial/b{repeat_times_B}_a{repeat_times_A}_b{repeat_times_B}.csv',
             index=False, header=False, mode='w'
         )
-        pd.concat([df_A, df_B, df_A], ignore_index=True).to_csv(
+        pd.concat([df_B, df_A, df_B], ignore_index=True).to_csv(
             f'../../event_csv/split_data/artificial/b{repeat_times_B}_a{repeat_times_A}_b{repeat_times_B}.csv',
             index=False, header=False, mode='a'
         )
