@@ -91,7 +91,7 @@ def compress_by_Manhattan(file_name,class_num,delta=5,count_margin=100,nature_fl
             temp_y = row[2] 
             count = 1
 
-# PCA main component 
+# PCA main component -- extracting fetures of key action trail 
 def PCA_method(data: pd.DataFrame):
     # get the NDarray form of dataframe 
     data = data.values 
@@ -120,7 +120,7 @@ def dimensionality_reduction_PCA(file_name,class_num,nature_flag=True):
     pd.DataFrame(data, columns=['value']).to_csv(
         to_file_path, mode='w', header=True, index=False)
     
-# Mean compression 
+# Mean compression -- smoothing key action trail  
 def compress_by_mean(file_name, class_num, chunksize = 100, nature_flag = True):
     file_path = None 
     to_file_path = None 
