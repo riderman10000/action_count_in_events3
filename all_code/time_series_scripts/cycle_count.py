@@ -6,7 +6,7 @@ import pymannkendall as mk
 # find a monotonous jumping point 
 
 # through Mann-kendall as a monotonous judgement standard 
-# data is the time sequence server 
+# data is the time sequence server  -- dynamic candidate selection 
 def get_index_of_bottom_and_top_by_mk(data):
     win_size = 10 
     step = 5 
@@ -219,3 +219,34 @@ def OBO(pred_count, real_count):
 
 
 # Index calculations under different conditions 
+
+# calculate the overall error of differene movements under the same light 
+def same_illumination_diff_action(file_names, pred_count):
+    # True data of the original data
+    nature_real_count = np.load('../npy_file/nature_data_real_count.npy')
+    
+    # Repnet network's prediction label on natural data
+    repnet_nature_pred_count = np.load('../npy_file/repnet_nature_data_real_count.npy')
+        
+    start = 0 
+    for name in file_names:
+        print(f'Light conditions are{name[7:-4]}MAE=',MAE(pred_count[start::5],nature_real_count[start::5]))
+        print(f'The light condition in the repnet is{name[7:-4]}MAE=',MAE(repnet_nature_pred_count[start::5],nature_real_count[start::5]))
+        print(f'Light conditions are{name[7:-4]}OBO=',OBO(pred_count[start::5],nature_real_count[start::5]))
+        print(f'The light condition in the repnet is{name[7:-4]}OBO=',OBO(repnet_nature_pred_count[start::5],nature_real_count[start::5]))
+        start = start + 1
+        print('-----------------')
+
+# calculate the overall error of the same action under different light 
+def diff_illumination_same_action(pred_count):
+    start = 0 
+    for i in range(2, 8):
+        if i == 3:
+            continue
+        print(f'class={i}MAE of action=',MAE(pred_count[start:start+5],nature_real_count[start:start+5]))
+        print(f'repnet middleclass={i}MAE of action=',MAE(repnet_nature_pred_count[start:start+5],nature_real_count[start:start+5]))
+        print(f'class={i}Action OBO=',OBO(pred_count[start:start+5],nature_real_count[start:start+5]))
+        print(f'repnet class={i}Action OBO=',OBO(repnet_nature_pred_count[start:start+5],nature_real_count[start:start+5]))
+        
+        start = start + 5
+        print('-----------------')

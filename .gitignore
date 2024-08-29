@@ -1,6 +1,5 @@
 # folders to ignore
 shapes_rotation
-paper 
 
 # ignore files
 remote_fetch.bat 
