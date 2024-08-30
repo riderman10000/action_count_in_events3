@@ -239,6 +239,13 @@ def same_illumination_diff_action(file_names, pred_count):
 
 # calculate the overall error of the same action under different light 
 def diff_illumination_same_action(pred_count):
+    # True data of the original data
+    nature_real_count = np.load('../npy_file/nature_data_real_count.npy')
+    
+    # Repnet network's prediction label on natural data
+    repnet_nature_pred_count = np.load('../npy_file/repnet_nature_data_real_count.npy')
+    
+    
     start = 0 
     for i in range(2, 8):
         if i == 3:
@@ -250,3 +257,53 @@ def diff_illumination_same_action(pred_count):
         
         start = start + 5
         print('-----------------')
+        
+# artificial synthesis data same, mid, back 
+def print_artificial_MAE_OBO(file_names, real_count, our_count, rep_count):
+    i = 0 
+    
+    real_d2 = np.array([])
+    real_d3 = np.array([])
+    real_d4 = np.array([])
+    
+    our_d2 = np.array([])
+    our_d3 = np.array([])
+    our_d4 = np.array([])
+    
+    rep_d2 = np.array([])
+    rep_d3 = np.array([])
+    rep_d4 = np.array([])
+    
+    for name in file_names:
+        count = name.count('_')
+        # explanation is the statistical result of the same action(D2) 
+        if count == 0:
+            real_d2 = np.append(real_d2, real_count[i])
+            our_d2 = np.append(our_d2, our_count[i])
+            rep_d2 = np.append(rep_d2, rep_count[i])
+            
+        # explanation is the movement of front and back stitching (D3) 
+        elif count == 1:
+            real_d3 = np.append(real_d3, real_count[i])
+            our_d3 = np.append(our_d3, our_count[i])
+            rep_d3 = np.append(rep_d3, rep_count[i])
+        # explanation is the action of stitching in the middle of the clip(D4)
+        elif count == 2:
+            real_d4 = np.append(real_d4, real_count[i])
+            our_d4 = np.append(our_d4, our_count[i])
+            rep_d4 = np.append(rep_d4, rep_count[i])
+            
+    print('MAE corresponding to D2 dataset repnet:',MAE(rep_d2,real_d2))
+    print('OBO corresponding to the D2 dataset repnet:',OBO(rep_d2,real_d2))
+    print('MAE corresponding to the D2 data set OUR:',MAE(our_d2,real_d2))
+    print('OBO corresponding to the D2 data set OUR:',OBO(our_d2,real_d2))
+    print('---------------------------------------------')
+    print('MAE corresponding to the D3 dataset repnet:',MAE(rep_d3,real_d3))
+    print('OBO corresponding to the D3 dataset repnet:',OBO(rep_d3,real_d3))
+    print('MAE corresponding to the D3 data set OUR:',MAE(our_d3,real_d3))
+    print('OBO corresponding to the D3 data set OUR:',OBO(our_d3,real_d3))
+    print('---------------------------------------------')
+    print('MAE corresponding to D4 dataset repnet:',MAE(rep_d4,real_d4))
+    print('OBO corresponding to the D4 dataset repnet:',OBO(rep_d4,real_d4))
+    print('MAE corresponding to the D4 data set OUR:',MAE(our_d4,real_d4))
+    print('OBO corresponding to the D4 data set OUR:',OBO(our_d4,real_d4))
