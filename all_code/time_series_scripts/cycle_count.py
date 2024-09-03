@@ -87,147 +87,138 @@ def get_count(result):
     return count
 
 # return time sequence rise/decrease along the average value of the price after the mutual comparison
-def get_dtw_mean_cost(win_change, top_win, data):
+def get_dtw_mean_cost(win_change,top_win,data):
     win_change_length = win_change.shape[0]
-    # rising along the number 
-    top_count = np.count_nonzero(top_win == 1)
-    # drop along the number 
+    # Rising along the number
+    top_count = np.count_nonzero(top_win==1)
+    # Drop along the number
     bottom_count = top_win.shape[0] - top_count
-    # storage rising along dtw comparison results 
-    avg_cost_by_dtw_top = np.zeros(shape=(top_count, top_count))
-    avg_cost_by_dtw_bottom = np.zeros(shape=(bottom_count, bottom_count))
-    # rising/down index along the line 
-    k_top = 0 
-    k_bottom = 0 
-    # column index 
-    g_top = 0 
-    g_bottom = 0 
-    # guaranteed not to cross the border, bubbling comparison 
-    for i in range(0, win_change_length - 1):
-        # avoid repeated comparisons in the same paragraph 
+    # Storage rising along dtw comparison results
+    avg_cost_by_dtw_top = np.zeros(shape=(top_count,top_count))
+    avg_cost_by_dtw_bottom = np.zeros(shape=(bottom_count,bottom_count))
+    # Rising/down index along the line
+    k_top = 0
+    k_bottom = 0
+    # Column index
+    g_top = 0
+    g_bottom = 0
+    # Guaranteed not to cross the border, bubbling comparison
+    for i in range(0,win_change_length-1):
+        # Avoid repeated comparisons in the same paragraph
         if top_win[i] == top_win[i+1]:
             continue
-        # explain that i point to the beginning of the rising edge 
-        if top_win[i] == 1 :
-            g_top = k_top + 1 
-        else:
-            g_bottom = k_bottom + 1 
-            
-        for j in range(i+1, win_change_length -1 ):
-            if top_win[j] == top_win[j+1]:
-                continue
-            
-            # you need to let j point to the latter of i rising edge 
-            if top_win[i] == 1 and top_win[j] == 1:
-                # get the matching price of two time sequences 
-                cost, _ = fastdtw(data[win_change[i]: win_change[i+1]], data[win_change[j] : win_change[j+1]])
-                # stay in the comparison of the rising along the comparison
-                num = data[win_change[j] : win_change[j+1]].shape[0] + data[win_change[i] : win_change[i+1]].shape[0]
-                avg_cost_by_dtw_top[k_top][g_top] = cost/num 
-                avg_cost_by_dtw_bottom[g_top][k_top] = cost/num 
-                g_top = g_top + 1 
-            elif top_win[i] == 0 and top_win[j] == 0:
-                # get the matching price of two time sequences 
-                cost, _ = fastdtw(data[win_change[i] : win_change[i+1]], data[win_change[j] : win_change[j+1]])
-                # stay in the comparison of the rising along the comparison
-                num = data[win_change[j] : win_change[j+1]].shape[0] + data[win_change[i] : win_change[i+1]].shape[0]
-                avg_cost_by_dtw_bottom[k_bottom][g_bottom] = cost/num
-                avg_cost_by_dtw_bottom[g_bottom][k_bottom] = cost/num 
-                g_top = g_top + 1 
-                
+        # Explain that I point to the beginning of the rising edge
         if top_win[i] == 1:
-            k_top = k_top + 1 
-        else : 
-            k_bottom = k_bottom + 1 
-    
-    # delete the fulll 0 line and the last 0 delete
-    avg_cost_by_dtw_top = avg_cost_by_dtw_top[:-1, :-1]
-    avg_cost_by_dtw_bottom = avg_cost_by_dtw_bottom[:-1, :-1]
-    
-    # replace your own comparison price to the average value of other numbers 
+            g_top = k_top + 1
+        else:
+            g_bottom = k_bottom + 1
+        for j in range(i+1,win_change_length-1):
+            if top_win[j]==top_win[j+1]:
+                continue
+            # You need to let J point to the latter of i rising edge
+            if top_win[i] == 1 and top_win[j] == 1:
+                # Get the matching price of two time sequences
+                cost, _ = fastdtw(data[win_change[i]:win_change[i+1]], data[win_change[j]:win_change[j+1]])
+                # Stay in the comparison of the rising along the comparison
+                num = data[win_change[j]:win_change[j+1]].shape[0] + data[win_change[i]:win_change[i+1]].shape[0]
+                avg_cost_by_dtw_top[k_top][g_top] = cost/num
+                avg_cost_by_dtw_top[g_top][k_top] = cost/num
+                g_top = g_top + 1
+            elif top_win[i] == 0 and top_win[j] == 0:
+                # Get the matching price of two time sequences
+                cost, _ = fastdtw(data[win_change[i]:win_change[i+1]], data[win_change[j]:win_change[j+1]])
+                # Stay in the comparison of the rising along the comparison
+                num = data[win_change[j]:win_change[j+1]].shape[0] + data[win_change[i]:win_change[i+1]].shape[0]
+                avg_cost_by_dtw_bottom[k_bottom][g_bottom] = cost/num
+                avg_cost_by_dtw_bottom[g_bottom][k_bottom] = cost/num
+                g_top = g_top + 1
+            
+        if top_win[i] == 1:
+            k_top = k_top + 1
+        else:
+            k_bottom = k_bottom + 1
+    # Delete the full 0 line and the last 0 delete
+    avg_cost_by_dtw_top = avg_cost_by_dtw_top[:-1,:-1]
+    avg_cost_by_dtw_bottom = avg_cost_by_dtw_bottom[:-1,:-1]
+    # Replace your own comparison price to the average value of other numbers
     for arr in avg_cost_by_dtw_top:
         if arr.shape[0] != 1:
-            temp = np.sum(arr)/(arr.shape[0] - 1)
-            arr[arr == 0] = temp 
+            temp = np.sum(arr)/(arr.shape[0]-1)
+            arr[arr==0] = temp
     for arr in avg_cost_by_dtw_bottom:
         if arr.shape[0] != 1:
-            temp = np.sum(arr)/(arr.shape[0] - 1)
-            arr[arr == 0] = temp 
-    
+            temp = np.sum(arr)/(arr.shape[0]-1)
+            arr[arr==0] = temp
     result_top = np.array([])
     result_bottom = np.array([])
     if avg_cost_by_dtw_top.shape[0] != 0:
-        result_top = np.sort(np.mean(avg_cost_by_dtw_top, axis=1))
+        result_top = np.sort(np.mean(avg_cost_by_dtw_top,axis=1))
     if avg_cost_by_dtw_bottom.shape[0] != 0:
-        result_bottom = np.sort(np.mean(avg_cost_by_dtw_bottom, axis=1))
-    
-    # get the rising edge count 
-    count_top = get_count(result_top) 
-    # get the falling edge count 
+        result_bottom = np.sort(np.mean(avg_cost_by_dtw_bottom,axis=1))
+    # Get the rising edge count
+    count_top = get_count(result_top)
+    # Drop counting count
     count_bottom = get_count(result_bottom)
-    
-    # return larger rising or falling edge count 
+    # Back to the upper and lower edge counts larger
     return count_top if count_top > count_bottom else count_bottom
 
 
-def get_count_by_cost(file_name, class_num = -1, nature_flag = True):
-    file_path = None 
+def get_count_by_cost(file_name,class_num=-1,nature_flag=True):
+    file_path = None
     if nature_flag:
         file_path = f'../../event_csv/compress_event_manhattan/class{class_num}/smooth_by_pca/compress_by_mean/{file_name}'
     else:
         # Artificial synthesis data
         file_path = f'../../event_csv/compress_event_manhattan/articicial/smooth_by_pca/compress_by_mean/{file_name}'
-    # data after PCA and compress by mean 
+    # Data after PCA
     pca_data = pd.read_csv(file_path)['value']
-    win_change, top_win, win_size, step = get_index_of_bottom_and_top_by_mk(pca_data)
-    return get_dtw_mean_cost(win_change, top_win, pca_data)
+    win_change,top_win,win_size,step = get_index_of_bottom_and_top_by_mk(pca_data)
+    return get_dtw_mean_cost(win_change,top_win,pca_data)
 
-# get all action cycle prediction infromation 
-def get_all_count(file_names, nature_flag= True):
-    # storage predictive value 
+# Get all action cycle prediction information
+def get_all_count(file_names,nature_flag=True):
+    # Storage predictive value
     pred_count = np.array([])
     if nature_flag:
-        for i in range(2, 8):
+        for i in range(2,8):
             for name in file_names:
-                if i == 3:
-                    continue 
-                count = get_count_by_cost(f'{name}', i)
-                pred_count = np.append(pred_count, count)
-                print(f"The file name is {name} middle class_num = {i} the number of repetitions of the action is: {count}")
-            print("------------------------")
-    else: 
-        # artificial synthesis data 
+                if i==3:
+                    continue
+                count = get_count_by_cost(f'{name}',i)
+                pred_count = np.append(pred_count,count)
+                print(f'The file name is {name} middle class_num={i} the number of repetitions of the action is:{count}')
+            print('-----------------')
+    else:
+        # Artificial synthesis data
         for name in file_names:
-            count = get_count_by_cost(name, nature_flag=False) 
-            pred_count = np.append(pred_count, count) 
-            print(f"The file name is {name} the number of repetitions of the action is: {count}")
+            count = get_count_by_cost(name,nature_flag=False)
+            pred_count = np.append(pred_count,count)
+            print(f'The file name is {name} the number of repetitions of the action is:{count}')
     return pred_count
 
 # results criteria 
 
-# Mean Absolute error, an average absolute error
-def MAE(pred_count, real_count):
+# Mean absolute error, an average absolute error
+def MAE(pred_count,real_count):
     return np.mean(np.abs(real_count - pred_count)/real_count)
-
-# off-by-one (OBO) count error 
-def OBO(pred_count, real_count):
-    # predictive value and real value error 
-    temp = np.abs(real_count - pred_count)
-    # the proportion of the prediction value of the error is less than the same 
-    return temp[temp <= 1].shape[0]/temp.shape[0]
-
+# OffBy-One (OBO) count error.
+def OBO(pred_count,real_count):
+    # Predictive value and real value error
+    temp = np.abs(real_count-pred_count)
+    # The proportion of the prediction value of the error is less than the same
+    return temp[temp<=1].shape[0]/temp.shape[0]
 
 # Index calculations under different conditions 
 
-# calculate the overall error of differene movements under the same light 
-def same_illumination_diff_action(file_names, pred_count):
+# Calculate the overall error of different movements under the same light
+def same_illumination_diff_action(file_names,pred_count):
     # True data of the original data
     nature_real_count = np.load('../npy_file/nature_data_real_count.npy')
     
     # Repnet network's prediction label on natural data
     repnet_nature_pred_count = np.load('../npy_file/repnet_nature_data_real_count.npy')
-        
-    start = 0 
+   
+    start = 0
     for name in file_names:
         print(f'Light conditions are{name[7:-4]}MAE=',MAE(pred_count[start::5],nature_real_count[start::5]))
         print(f'The light condition in the repnet is{name[7:-4]}MAE=',MAE(repnet_nature_pred_count[start::5],nature_real_count[start::5]))
