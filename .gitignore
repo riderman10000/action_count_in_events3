@@ -1,4 +1,5 @@
 # folders to ignore
+__pycache__
 shapes_rotation
 
 # ignore files
