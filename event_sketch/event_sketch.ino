@@ -11,8 +11,8 @@
 #define first_comma 0xf0 
 #define second_comma 0x0f 
 
-float x[16000] = {0};
-float y[16000] = {0};
+uint8_t x[120000] = {0};
+uint8_t y[100] = {0};
 
 String file_string; 
 
@@ -21,7 +21,12 @@ void setup() {
     // serial
     Serial.begin(115200);
     SD_card card;
-    
+
+    log_d("Total heap: %d", ESP.getHeapSize());
+    log_d("Free heap: %d", ESP.getFreeHeap());
+    log_d("Total PSRAM: %d", ESP.getPsramSize());
+    log_d("Free PSRAM: %d", ESP.getFreePsram());
+
     for(int i =0 ; i < 10; i++){
         card.get_x_y_value(x[i], y[i]);
     }

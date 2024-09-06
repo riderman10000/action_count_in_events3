@@ -54,7 +54,7 @@ class SD_card{
         }
     }
 
-    void get_x_y_value(float &x, float &y){
+    void get_x_y_value(uint8_t &x, uint8_t &y){
         char file_char = file.read();
         uint8_t comma = 0x00;
         String file_string = "";

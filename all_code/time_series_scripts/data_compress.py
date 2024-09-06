@@ -116,7 +116,7 @@ def dimensionality_reduction_PCA(file_name,class_num,nature_flag=True):
         df = pd.read_csv(f'../../event_csv/compress_event_manhattan/articicial/{file_name}')
         to_file_path = f'../../event_csv/compress_event_manhattan/articicial/smooth_by_pca/{file_name}'
     # PCA main component analysis, as long as the first dimension 
-    data = PCA_method(df) 
+    data = PCA_method(df)
     pd.DataFrame(data, columns=['value']).to_csv(
         to_file_path, mode='w', header=True, index=False)
     
