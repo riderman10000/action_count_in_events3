@@ -1,7 +1,7 @@
 import numpy as np 
 import pandas as pd 
 import statsmodels.api as sm 
-from sklearn.decomposition import PCA 
+from sklearn.decomposition import PCA, IncrementalPCA
 
 # manhattan compression 
 
@@ -103,6 +103,13 @@ def PCA_method(data: pd.DataFrame):
     # HP filter 
     _, smooth = sm.tsa.filters.hpfilter(pca_data) 
     return smooth
+
+def intermediate_PCA_method(data: pd.DataFrame):
+    data = data.values 
+    ipca = IncrementalPCA(n_components=1, batch_size=10)
+    ipca_data = ipca.fit_transform(data)
+    ipca_data = np.reshape(ipca_data, -1)
+    ...
 
 # PCA 
 def dimensionality_reduction_PCA(file_name,class_num,nature_flag=True):
