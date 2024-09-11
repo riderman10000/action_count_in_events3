@@ -9,7 +9,7 @@ import pymannkendall as mk
 # data is the time sequence server  -- dynamic candidate selection 
 # Through Mann-Kendall as a monotonous judgment standard
 # DATA is the time sequence server
-def get_index_of_bottom_and_top_by_mk(data):
+def get_index_of_bottom_and_top_by_mk(data:pd.Series):
     win_size=10
     step=5
     first = np.inf
