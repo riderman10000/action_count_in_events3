@@ -28,7 +28,7 @@ def write_to_csv(temp_x,temp_y,count,path):
 # Select the starting point of the cluster
 def select_start_point(df: pd.DataFrame, delta):
     for index,row in df.iterrows():
-        d1,d2 = compute_distance(row[1],row[2],df['x'][index+1],df['y'][index+1])
+        d1,d2 = compute_distance(row[1],row[2], df['x'][index+1],df['y'][index+1])
         if d1 <= delta and d2 < delta:
             # Explain that there are other points around the current point, the probability is not the noise point
             return index,row   

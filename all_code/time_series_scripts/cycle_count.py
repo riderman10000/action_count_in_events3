@@ -9,7 +9,7 @@ import pymannkendall as mk
 # data is the time sequence server  -- dynamic candidate selection 
 # Through Mann-Kendall as a monotonous judgment standard
 # DATA is the time sequence server
-def get_index_of_bottom_and_top_by_mk(data):
+def get_index_of_bottom_and_top_by_mk(data:pd.Series):
     win_size=10
     step=5
     first = np.inf
@@ -112,6 +112,7 @@ def get_dtw_mean_cost(win_change,top_win,data):
             g_top = k_top + 1
         else:
             g_bottom = k_bottom + 1
+            
         for j in range(i+1,win_change_length-1):
             if top_win[j]==top_win[j+1]:
                 continue
@@ -144,7 +145,7 @@ def get_dtw_mean_cost(win_change,top_win,data):
     for arr in avg_cost_by_dtw_top:
         if arr.shape[0] != 1:
             temp = np.sum(arr)/(arr.shape[0]-1)
-            arr[arr==0] = temp
+            arr[arr==0] = temp  # empty or 0 values are replaced by the sum/temp 
     for arr in avg_cost_by_dtw_bottom:
         if arr.shape[0] != 1:
             temp = np.sum(arr)/(arr.shape[0]-1)

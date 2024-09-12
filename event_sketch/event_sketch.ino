@@ -11,9 +11,6 @@
 #define first_comma 0xf0 
 #define second_comma 0x0f 
 
-uint8_t x[120000] = {0};
-uint8_t y[100] = {0};
-
 String file_string; 
 
 
