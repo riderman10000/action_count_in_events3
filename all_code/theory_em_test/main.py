@@ -3,6 +3,7 @@ import logging
 import numpy as np 
 import matplotlib.pyplot as plt 
 import pandas as pd 
+import statsmodels.api as sm 
 
 # custom python file 
 import test_pca
@@ -13,7 +14,13 @@ logging.basicConfig(
     datefmt="%Y-%m-%d %H:%M",
     level= logging.DEBUG,
 )
-
+# set font 
+from pylab import mpl 
+mpl.rcParams['font.sans-serif'] = ["SimHei"]
+# solve the problem of negative sign display 
+plt.rcParams['axes.unicode_minus'] = False 
+# set the width of the coordinate axis 
+plt.rcParams['axes.linewidth'] = 2
 
 class_num = 2 
 file_names = os.listdir("./event_csv/split_data/class2/")
@@ -28,8 +35,8 @@ logging.debug(data_df.describe())
 # event data processing
 
 count = 0 
-counter = 0 
-count_margin = 1000 
+counter = 1
+count_margin = 100
 x1, y1, x2, y2 = 0, 0, 0, 0
 manhattan_chunk = np.zeros((count_margin, 2), dtype=np.uint8)
 temp_pca_data = np.array([])
@@ -37,14 +44,15 @@ temp_pca_data = np.array([])
 for index, row in enumerate(data_df.iterrows()):
     if index == 0 :
         x1, y1 = data_df['x'][index], data_df['y'][index] # row[1]['x'], row[1]['y']
+        manhattan_chunk[0][0], manhattan_chunk[0][1] = x1, y1 
         continue
     
     if (counter % count_margin) == 0:
-        # update: call the pca smooth function here...
         temp_pca_data = np.concatenate([temp_pca_data, test_pca.pca_smoothing(manhattan_chunk)])
         counter = 0
-        # plt.plot(temp_pca_data) 
-        # plt.show() 
+        first = False
+            # plt.plot(temp_pca_data) 
+            # plt.show() 
         ...
     
     x2, y2 = data_df['x'][index], data_df['y'][index]
@@ -59,7 +67,7 @@ for index, row in enumerate(data_df.iterrows()):
     
     if is_not_noise and in_count_margin:
         count += 1 
-        manhattan_chunk[counter][0], manhattan_chunk[counter][1] = x1, y1
+        manhattan_chunk[counter][0], manhattan_chunk[counter][1] = x2, y2 
         counter += 1 
         # continue
     else:
@@ -69,6 +77,9 @@ for index, row in enumerate(data_df.iterrows()):
                 # write to the remaining data less than the count margin
                 # call your function 
                 # pca_smoothing 
+                _, smooth = sm.tsa.filters.hpfilter(temp_pca_data)
+                smooth_df = pd.DataFrame(smooth)
+                smooth_df.plot()
                 ...
             break
         x3, y3  = data_df['x'][index+1], data_df['y'][index+1]
@@ -83,4 +94,7 @@ for index, row in enumerate(data_df.iterrows()):
         x1, y1 = x2, y2 
         count = 1 
     # logging.debug(f"[*] count: {count} @ {counter}, x1: {x1}, y1: {y1} | x2: {x2}, y2: {y2}")
-    
+_, smooth = sm.tsa.filters.hpfilter(temp_pca_data)
+smooth_df = pd.DataFrame(smooth)
+smooth_df.plot()
+plt.show()

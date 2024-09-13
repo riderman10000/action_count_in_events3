@@ -12,12 +12,14 @@ logging.basicConfig(
     level= logging.DEBUG,
 )
 
+ipca = IncrementalPCA(n_components=1, batch_size=1000) 
 def pca_smoothing(data: np.ndarray):
     logging.debug(f"data shape: {data.shape}")
-    ipca = IncrementalPCA(n_components=1, batch_size=10) 
+    ipca.partial_fit(data)
     ipca_data = ipca.fit_transform(data)
     ipca_data = np.reshape(ipca_data, -1)
-    _, smooth = sm.tsa.filters.hpfilter(ipca_data) 
+    # _, smooth = sm.tsa.filters.hpfilter(ipca_data) 
     logging.debug(f"ipca data shape: {ipca_data}")
-    return smooth
+    return ipca_data
+    # return smooth
     ...
