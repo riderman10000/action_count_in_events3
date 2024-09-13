@@ -77,9 +77,9 @@ for index, row in enumerate(data_df.iterrows()):
                 # write to the remaining data less than the count margin
                 # call your function 
                 # pca_smoothing 
-                _, smooth = sm.tsa.filters.hpfilter(temp_pca_data)
-                smooth_df = pd.DataFrame(smooth)
-                smooth_df.plot()
+                # _, smooth = sm.tsa.filters.hpfilter(temp_pca_data)
+                # smooth_df = pd.DataFrame(smooth)
+                # smooth_df.plot()
                 ...
             break
         x3, y3  = data_df['x'][index+1], data_df['y'][index+1]
