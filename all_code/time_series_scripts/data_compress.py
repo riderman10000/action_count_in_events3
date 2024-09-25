@@ -90,6 +90,7 @@ def compress_by_Manhattan(file_name,class_num,delta=5,count_margin=100,nature_fl
             temp_x = row[1] 
             temp_y = row[2] 
             count = 1
+        print(f"[*] count: {count}, x1: {baseline_x}, y1: {baseline_y} | x2: {row[1]}, y2: {row[2]}")
 
 # PCA main component -- extracting fetures of key action trail 
 def PCA_method(data: pd.DataFrame):
