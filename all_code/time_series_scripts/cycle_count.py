@@ -1,6 +1,6 @@
-import numpy as np 
-import pandas as pd 
 from fastdtw import fastdtw
+import pandas as pd 
+import numpy as np 
 import pymannkendall as mk
 
 # find a monotonous jumping point 
@@ -14,8 +14,10 @@ def get_index_of_bottom_and_top_by_mk(data:pd.Series):
     step=5
     first = np.inf
     second = -np.inf
+
     flag = True
     final_win_change = None
+    
     while(second < first):
         # Record the total number of pane divided
         win_sum = int(1 + (data.shape[0]-win_size)/step if data.shape[0] > win_size else 0)
@@ -35,7 +37,8 @@ def get_index_of_bottom_and_top_by_mk(data:pd.Series):
 
         # Traversing the trend of each pane
         for i in range(1,win_trend.shape[0]):
-            # The previous one is not increasing, and the current is increasing, indicating that this is a mutation point
+            # The previous one is not increasing, and the current is increasing, 
+            # indicating that this is a mutation point
             if win_trend[i] == 'increasing' and win_trend[i-1]!='increasing':
                 win_change = np.append(win_change,win_start_index[i-1])
             elif win_trend[i] == 'decreasing' and win_trend[i-1]!='decreasing':
