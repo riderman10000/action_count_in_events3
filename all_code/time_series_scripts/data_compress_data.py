@@ -50,6 +50,8 @@ def compress_by_Manhattan(df: pd.DataFrame, delta=5,count_margin=100,nature_flag
     # df = pd.read_csv(file_path)
 
     # manhattan distance comparison object [the initial point may be noise point]
+    
+    temp_df = df.copy()
     start, row = select_start_point(df, delta)
     # row[0] is the timestamp column 
     baseline_x = row.iloc[1]
@@ -80,7 +82,7 @@ def compress_by_Manhattan(df: pd.DataFrame, delta=5,count_margin=100,nature_flag
                 if count > 1 : 
                     # write_to_csv(temp_x, temp_y, count, to_file_path)
                     # data = pd.concat([data, pd.DataFrame([[x, y]] for x,y in zip(temp_x, temp_y))], ignore_index=True)
-                    data = pd.concat([data, pd.DataFrame([[temp_x, temp_y]], columns= ['x', 'y'])], ignore_index=True)
+                    data = pd.concat([data, pd.DataFrame([[temp_x/count, temp_y/count]], columns= ['x', 'y'])], ignore_index=True)
                     
                     # data.pop
                 break
@@ -91,7 +93,7 @@ def compress_by_Manhattan(df: pd.DataFrame, delta=5,count_margin=100,nature_flag
                 # The current event point is noise and will be skipped and not entered.
                 continue
             # write_to_csv(temp_x, temp_y, count, to_file_path)
-            data = pd.concat([data, pd.DataFrame([[temp_x, temp_y]], columns= ['x', 'y'])], ignore_index=True)
+            data = pd.concat([data, pd.DataFrame([[temp_x/count, temp_y/count]], columns= ['x', 'y'])], ignore_index=True)
 
             baseline_x = row.iloc[1] 
             baseline_y = row.iloc[2] 

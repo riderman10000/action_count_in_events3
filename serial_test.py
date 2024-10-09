@@ -6,6 +6,7 @@ def serial_monitor(port='/dev/ttyUSB0', baud_rate=115200, timeout=1):
     """ Continuously monitor serial data from the ESP32, similar to VSCode monitor. """
     esp_data = False
     data_capture =  []
+    mk_index_capture = []
     try:
         # Open the serial port with the specified settings
         with serial.Serial(port, baud_rate, timeout=None) as ser:
@@ -32,6 +33,14 @@ def serial_monitor(port='/dev/ttyUSB0', baud_rate=115200, timeout=1):
                     
                     if type(esp_data) == type(None):
                         print(data)
+                        if not 'COUNT' in data:
+                            mk_index_capture.append(data)
+                        else: 
+                            # m_df = pd.DataFrame(mk_index_capture) 
+                            with open('data.txt', 'w') as file :
+                                for a in mk_index_capture:
+                                    file.write(a + "\n")
+
                         # then program will end the processing 
                 # time.sleep(0.001)
 
