@@ -13,6 +13,8 @@
 
 String file_string; 
 
+uint8_t x[10] = {0};
+uint8_t y[10] = {0};
 
 void setup() {
     // serial
