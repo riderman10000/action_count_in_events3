@@ -164,6 +164,7 @@ def get_dtw_mean_cost(win_change,top_win,data):
     # Drop counting count
     count_bottom = get_count(result_bottom)
     # Back to the upper and lower edge counts larger
+    print(f" count top: {count_top} and count bottom: {count_bottom}" )
     return count_top if count_top > count_bottom else count_bottom
 
 

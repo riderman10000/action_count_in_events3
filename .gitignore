@@ -1,6 +1,7 @@
 # folders to ignore
 __pycache__
 shapes_rotation
+figs
 
 # ignore files
 remote_fetch.bat 
