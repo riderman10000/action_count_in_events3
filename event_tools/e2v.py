@@ -104,4 +104,4 @@ if __name__ == "__main__":
     events = tl.load_event_data(
         # './event_csv/split_data/artificial/a_b7_a.csv') # Replace with your actual file path
         './event_csv/split_data/class5/user02_led.csv')  # Replace with your actual file path
-    save_event_as_video(events, 'test.mp4', frame_per_second=1/60)
+    save_event_as_video(events, 'test.mp4', frame_per_second=1/30)

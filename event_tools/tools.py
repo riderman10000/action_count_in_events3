@@ -19,14 +19,16 @@ def load_event_data(file_path):
     # events = np.loadtxt(file_path) 
     
     data_df = pd.read_csv(file_path)
-    data_df = data_df[['x', 'y']]
-    
+    # data_df = data_df[['x', 'y']]
+    # print(data_df)
     events = np.random.rand(len(data_df), 3)  # For the sake of illustration, generate random events
-    events[:, 0] = [_ for _ in range(len(data_df))]  # np.floor(events[:, 0] * 1000)  # Random timestamps
+    # events[:, 0] = [_ for _ in range(len(data_df))]  # np.floor(events[:, 0] * 1000)  # Random timestamps
+    events[:, 0] = data_df['timestamp'].to_numpy() # [_ for _ in range(len(data_df))]
     events[:, 1] = data_df['x'].to_numpy(dtype=np.int32) # np.floor(events[:, 1] * 640)  # Random x-coordinates (640x480 resolution)
     events[:, 2] = data_df['y'].to_numpy(dtype=np.int32) # np.floor(events[:, 2] * 480)  # Random y-coordinates (640x480 resolution)
+    
+    # exit()
     return events
-
 
 
 # Function to visualize events as a scatter plot (spatial distribution)
