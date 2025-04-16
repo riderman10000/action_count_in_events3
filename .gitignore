@@ -3,6 +3,11 @@ __pycache__
 shapes_rotation
 figs
 
+/**/combined_multi_class
+/**/combined_same_class
+/**/code-prompt.txt
+
+
 # ignore files
 remote_fetch.bat 
 remote_upload.bat 

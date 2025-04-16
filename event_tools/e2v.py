@@ -43,12 +43,12 @@ def save_event_as_video(events, name,
         image = image - (decay * image ) #* (time_stamp - prev_time))
         image[image < 0] = 0 
         
-        print(event_idx, image.max())
         image_display = image.astype(np.uint8)
         
         cv2.imshow('test', cv2.resize(image_display, (width * image_scale, height * image_scale)))
         
-        if ((time_stamp - prev_time) >  (frame_per_second * 1000)):
+        if ((time_stamp - prev_time) >  (frame_per_second * 100000)):
+            print(event_idx,time_stamp, image.max())
             video_writer.write(image_display) 
             prev_time = time_stamp 
         
@@ -103,5 +103,6 @@ if __name__ == "__main__":
     # load event camera data 
     events = tl.load_event_data(
         # './event_csv/split_data/artificial/a_b7_a.csv') # Replace with your actual file path
-        './event_csv/split_data/class5/user02_led.csv')  # Replace with your actual file path
+        # './event_csv/split_data/class5/user02_led.csv')  # Replace with your actual file path
+        './all_code/time_series/artificial_data/combined_same_class/user02+f+f-13.csv')
     save_event_as_video(events, 'test.mp4', frame_per_second=1/30)
